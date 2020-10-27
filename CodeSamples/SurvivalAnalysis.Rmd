@@ -1,0 +1,71 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+
+```{r}
+library(survival)
+library(survminer)
+library(dplyr)
+```
+
+# The Lung Dataset
+https://www.picostat.com/dataset/r-dataset-package-survival-lung
+
+NCCTG Lung Cancer Data
+Description
+
+Survival in patients with advanced lung cancer from the North Central Cancer Treatment Group. Performance scores rate how well the patient can perform usual daily activities.
+
+
+Format
+inst:	Institution code
+time:	Survival time in days
+status:	censoring status 1=censored, 2=dead
+age:	Age in years
+sex:	Male=1 Female=2
+ph.ecog:	ECOG performance score (0=good 5=dead)
+ph.karno:	Karnofsky performance score (bad=0-good=100) rated by physician
+pat.karno:	Karnofsky performance score as rated by patient
+meal.cal:	Calories consumed at meals
+wt.loss:	Weight loss in last six months
+
+```{r}
+head(lung)
+```
+## Plotting Survival Curves
+
+### Using Survival Package
+```{r}
+plot(survfit(Surv(time, status) ~ 1, data = lung), 
+     xlab = "Days", 
+     ylab = "Overall survival probability")
+```
+
+### Using Survminer
+```{r}
+ggsurvplot(
+    fit = survfit(Surv(time, status) ~ 1, data = lung), 
+    xlab = "Days", 
+    ylab = "Overall survival probability")
+```
+## Simple Cox Regression Model
+
+```{r}
+res.cox <- coxph(Surv(time, status) ~ sex, data = lung)
+res.cox
+```
+
+```{r}
+summary(res.cox)
+```
+
+## Multivariate Cox Regression Model
+
+```{r}
+res.cox <- coxph(Surv(time, status) ~ age + sex + ph.ecog, data =  lung)
+summary(res.cox)
+```
+    
